@@ -9,8 +9,11 @@ from enigma.enigma_machine import EnigmaMachine
 def main():
     st.title("Simulador de Máquina Enigma")
 
+    # Ruta absoluta para el archivo de imagen
+    image_path = os.path.join(os.path.dirname(__file__), 'Allosteric_Solutions.png')
+
     with st.sidebar:
-        st.image("out-0.png", caption='Allosteric Solutions', width=360)
+        st.image(image_path, caption='Allosteric Solutions', width=360)
         st.markdown("[Visit our website](https://www.allostericsolutions.com)")
         st.markdown("Contact: [franciscocuriel@allostericsolutions.com](mailto:franciscocuriel@allostericsolutions.com)")
 
@@ -78,7 +81,27 @@ def main():
 
 def aplicar_configuracion(configuracion_importada):
     # Parsear y aplicar la configuración importada
-    pass
+    # Ejemplo de formato de configuración importada:
+    # Rotores: ['Rotor I', 'Rotor II', 'Rotor III']
+    # Posiciones Iniciales: [0, 0, 0]
+    # Plugboard: {'A': 'B', 'B': 'A', 'C': 'D', 'D': 'C'}
+    try:
+        lines = configuracion_importada.split('\n')
+        rotors_line = lines[0].split(': ')[1].strip("[]").replace("'", "").split(', ')
+        positions_line = [int(x) for x in lines[1].split(': ')[1].strip("[]").split(', ')]
+        plugboard_line = eval(lines[2].split(': ')[1])
+
+        # Aplicar la configuración a los selectboxes y sliders
+        for i, rotor_name in enumerate(rotors_line):
+            st.session_state[f'rotor_{i+1}'] = rotor_name
+            st.session_state[f'position_{i}'] = positions_line[i]
+
+        for letter, swap_with in plugboard_line.items():
+            st.session_state[f'plugboard_{letter}'] = swap_with
+
+        st.success("Configuración aplicada con éxito")
+    except Exception as e:
+        st.error(f"Error al aplicar la configuración: {e}")
 
 if __name__ == "__main__":
     main()
