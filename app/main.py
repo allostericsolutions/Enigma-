@@ -35,15 +35,19 @@ def main():
     # Selección de rotores
     st.header("Selección de Rotores")
     selected_rotors = []
+    selected_rotor_names = []
     for i in range(1, 4):
         rotor_name = st.selectbox(f"Selecciona el rotor {i}", list(rotors.keys()), key=f"rotor_{i}")
         selected_rotors.append(rotors[rotor_name])
+        selected_rotor_names.append(rotor_name)
 
     # Configuración de la posición inicial de los rotores
     st.header("Posición Inicial de los Rotores")
+    rotor_positions = []
     for i, rotor in enumerate(selected_rotors):
         position = st.slider(f"Posición inicial del {i+1}° rotor", 0, 25, 0, key=f"position_{i}")
         rotor.set_position(position)
+        rotor_positions.append(position)
 
     # Configuración del plugboard
     st.header("Configuración del Plugboard")
@@ -70,8 +74,8 @@ def main():
 
     # Mostrar configuración seleccionada
     st.header("Configuración Seleccionada")
-    configuracion_seleccionada = f"Rotores: {[rotor_name for rotor_name in selected_rotors]}\n"
-    configuracion_seleccionada += f"Posiciones Iniciales: {[rotor.position for rotor in selected_rotors]}\n"
+    configuracion_seleccionada = f"Rotores: {selected_rotor_names}\n"
+    configuracion_seleccionada += f"Posiciones Iniciales: {rotor_positions}\n"
     configuracion_seleccionada += f"Plugboard: {plugboard_dict}"
     st.text_area("Configuración", value=configuracion_seleccionada, height=200)
 
