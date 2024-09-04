@@ -1,3 +1,5 @@
+import sys
+import os
 import streamlit as st
 from enigma.rotor import Rotor
 from enigma.reflector import Reflector
@@ -7,13 +9,15 @@ from enigma.enigma_machine import EnigmaMachine
 def main():
     st.title("Simulador de Máquina Enigma")
 
-    # URL de la imagen
-    image_url = "https://www.allostericsolutions.com/path/to/Allosteric_Solutions.png"
+    # Mostrar logo, contacto y sitio web antes de las pestañas
+    st.image(
+        "https://storage.googleapis.com/allostericsolutionsr/Allosteric_Solutions.png",
+        width=400,
+    )
+    st.write("Contacto:", "franciscocuriel@allostericsolutions.com")
+    st.write("Sitio web:", "www.allostericsolutions.com")
 
-    with st.sidebar:
-        st.image(image_url, caption='Allosteric Solutions', width=360)
-        st.markdown("[Visit our website](https://www.allostericsolutions.com)")
-        st.markdown("Contact: [franciscocuriel@allostericsolutions.com](mailto:franciscocuriel@allostericsolutions.com)")
+    st.write("### Enigma Machine")
 
     # Definición de los rotores disponibles
     rotors = {
