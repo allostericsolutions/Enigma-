@@ -65,10 +65,13 @@ def main():
     st.header("Selección de Rotores")
     selected_rotors = []
     selected_rotor_names = []
+    available_rotors = list(rotors.keys())
+
     for i in range(1, 4):
-        rotor_name = st.selectbox(f"Selecciona el rotor {i}", list(rotors.keys()), key=f"rotor_{i}")
+        rotor_name = st.selectbox(f"Selecciona el rotor {i}", available_rotors, key=f"rotor_{i}")
         selected_rotors.append(rotors[rotor_name])
         selected_rotor_names.append(rotor_name)
+        available_rotors.remove(rotor_name)
 
     # Configuración de la posición inicial de los rotores
     st.header("Posición Inicial de los Rotores")
