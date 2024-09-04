@@ -1,6 +1,7 @@
 import sys
 import os
 import streamlit as st
+import pyperclip
 from enigma.rotor import Rotor
 from enigma.reflector import Reflector
 from enigma.plugboard import Plugboard
@@ -51,12 +52,14 @@ def main():
 
     # Configuración del plugboard
     st.header("Configuración del Plugboard")
+    plugboard_connections = st.text_input("Introduce las conexiones del plugboard (ej. 'AB CD EF')", "")
     plugboard_dict = {}
-    for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-        swap_with = st.selectbox(f"Intercambiar {letter} con", [""] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), key=f"plugboard_{letter}")
-        if swap_with and swap_with != letter:
-            plugboard_dict[letter] = swap_with
-            plugboard_dict[swap_with] = letter
+    if plugboard_connections:
+        pairs = plugboard_connections.split()
+        for pair in pairs:
+            if len(pair) == 2:
+                plugboard_dict[pair[0].upper()] = pair[1].upper()
+                plugboard_dict[pair[1].upper()] = pair[0].upper()
 
     plugboard = Plugboard(plugboard_dict)
 
@@ -78,6 +81,11 @@ def main():
     configuracion_seleccionada += f"Posiciones Iniciales: {rotor_positions}\n"
     configuracion_seleccionada += f"Plugboard: {plugboard_dict}"
     st.text_area("Configuración", value=configuracion_seleccionada, height=200)
+
+    # Botón de copiado automático
+    if st.button("Copiar Configuración"):
+        pyperclip.copy(configuracion_seleccionada)
+        st.success("Configuración copiada al portapapeles")
 
     # Importar configuración
     st.header("Importar Configuración")
