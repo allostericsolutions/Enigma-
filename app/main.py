@@ -2,13 +2,14 @@ import sys
 import os
 import streamlit as st
 import pyperclip
+import json
 from enigma.rotor import Rotor
 from enigma.reflector import Reflector
 from enigma.plugboard import Plugboard
 from enigma.enigma_machine import EnigmaMachine
 
 def main():
-    st.title("Enigma Machine")
+    st.title("Simulador de Máquina Enigma")
 
     # Mostrar logo, contacto y sitio web en la barra lateral
     with st.sidebar:
@@ -77,9 +78,11 @@ def main():
 
     # Mostrar configuración seleccionada
     st.header("Configuración Seleccionada")
-    configuracion_seleccionada = f"Rotores: {selected_rotor_names}\n"
-    configuracion_seleccionada += f"Posiciones Iniciales: {rotor_positions}\n"
-    configuracion_seleccionada += f"Plugboard: {plugboard_dict}"
+    configuracion_seleccionada = json.dumps({
+        "Rotores": selected_rotor_names,
+        "Posiciones Iniciales": rotor_positions,
+        "Plugboard": plugboard_dict
+    }, indent=4)
     st.text_area("Configuración", value=configuracion_seleccionada, height=200)
 
     # Botón de copiado automático
@@ -95,16 +98,11 @@ def main():
         aplicar_configuracion(configuracion_importada)
 
 def aplicar_configuracion(configuracion_importada):
-    # Parsear y aplicar la configuración importada
-    # Ejemplo de formato de configuración importada:
-    # Rotores: ['Rotor I', 'Rotor II', 'Rotor III']
-    # Posiciones Iniciales: [0, 0, 0]
-    # Plugboard: {'A': 'B', 'B': 'A', 'C': 'D', 'D': 'C'}
     try:
-        lines = configuracion_importada.split('\n')
-        rotors_line = lines[0].split(': ')[1].strip("[]").replace("'", "").split(', ')
-        positions_line = [int(x) for x in lines[1].split(': ')[1].strip("[]").split(', ')]
-        plugboard_line = eval(lines[2].split(': ')[1])
+        config = json.loads(configuracion_importada)
+        rotors_line = config["Rotores"]
+        positions_line = config["Posiciones Iniciales"]
+        plugboard_line = config["Plugboard"]
 
         # Aplicar la configuración a los selectboxes y sliders
         for i, rotor_name in enumerate(rotors_line):
