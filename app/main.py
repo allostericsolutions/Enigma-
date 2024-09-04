@@ -15,13 +15,10 @@ def aplicar_configuracion(configuracion_importada):
         positions_line = config["Posiciones Iniciales"]
         plugboard_line = config["Plugboard"]
 
-        # Aplicar la configuración a los selectboxes y sliders
-        for i, rotor_name in enumerate(rotors_line):
-            st.session_state[f'rotor_{i+1}'] = rotor_name
-            st.session_state[f'position_{i}'] = positions_line[i]
-
-        for letter, swap_with in plugboard_line.items():
-            st.session_state[f'plugboard_{letter}'] = swap_with
+        # Guardar la configuración en el estado de la sesión
+        st.session_state['rotors_line'] = rotors_line
+        st.session_state['positions_line'] = positions_line
+        st.session_state['plugboard_line'] = plugboard_line
 
         st.success("Configuración aplicada con éxito")
     except Exception as e:
@@ -39,16 +36,13 @@ def main():
         st.write("Contacto:", "franciscocuriel@allostericsolutions.com")
         st.write("Sitio web:", "www.allostericsolutions.com")
 
-   
     # Importar configuración
     st.header("Importar Configuración")
     configuracion_importada = st.text_area("Pega la configuración aquí", height=200)
     if st.button("Aplicar Configuración"):
-        # Lógica para aplicar la configuración importada
         aplicar_configuracion(configuracion_importada)
-        st.experimental_rerun()
 
-    # Definición de los rotores disponibles
+    # Rotores disponibles
     rotors = {
         "Rotor I": Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", 16),
         "Rotor II": Rotor("AJDKSIRUXBLHWTMCQGZNPYFVOE", 4),
@@ -57,8 +51,24 @@ def main():
         "Rotor V": Rotor("VZBRGITYUPSDNHLXAWMJQOFECK", 25)
     }
 
-    # Definición del reflector
+    # Reflector disponible
     reflector_B = Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT")
+
+    # Configuración inicial basada en el estado de la sesión
+    if 'rotors_line' in st.session_state:
+        rotors_line = st.session_state['rotors_line']
+    else:
+        rotors_line = ["Rotor I", "Rotor II", "Rotor III"]
+    
+    if 'positions_line' in st.session_state:
+        positions_line = st.session_state['positions_line']
+    else:
+        positions_line = [0, 0, 0]
+    
+    if 'plugboard_line' in st.session_state:
+        plugboard_line = st.session_state['plugboard_line']
+    else:
+        plugboard_line = {}
 
     # Selección de rotores
     st.header("Selección de Rotores")
@@ -66,8 +76,8 @@ def main():
     selected_rotor_names = []
     available_rotors = list(rotors.keys())
 
-    for i in range(1, 4):
-        rotor_name = st.selectbox(f"Selecciona el rotor {i}", available_rotors, key=f"rotor_{i}")
+    for i, rotor_name in enumerate(rotors_line):
+        rotor_name = st.selectbox(f"Selecciona el rotor {i+1}", available_rotors, index=available_rotors.index(rotor_name), key=f"rotor_{i+1}")
         selected_rotors.append(rotors[rotor_name])
         selected_rotor_names.append(rotor_name)
         available_rotors.remove(rotor_name)
@@ -75,14 +85,14 @@ def main():
     # Configuración de la posición inicial de los rotores
     st.header("Posición Inicial de los Rotores")
     rotor_positions = []
-    for i, rotor in enumerate(selected_rotors):
-        position = st.slider(f"Posición inicial del {i+1}° rotor", 0, 25, 0, key=f"position_{i}")
-        rotor.set_position(position)
+    for i, position in enumerate(positions_line):
+        position = st.slider(f"Posición inicial del {i+1}° rotor", 0, 25, position, key=f"position_{i}")
+        selected_rotors[i].set_position(position)
         rotor_positions.append(position)
 
     # Configuración del plugboard
     st.header("Configuración del Plugboard")
-    plugboard_connections = st.text_input("Introduce las conexiones del plugboard (ej. 'AB CD EF')", "")
+    plugboard_connections = st.text_input("Introduce las conexiones del plugboard (ej. 'AB CD EF')", " ".join([f"{k}{v}" for k, v in plugboard_line.items()]))
     plugboard_dict = {}
     if plugboard_connections:
         pairs = plugboard_connections.split()
@@ -90,13 +100,13 @@ def main():
             if len(pair) == 2:
                 plugboard_dict[pair[0].upper()] = pair[1].upper()
                 plugboard_dict[pair[1].upper()] = pair[0].upper()
-
+    
     plugboard = Plugboard(plugboard_dict)
 
-    # Crear la máquina Enigma
+    # Crear la máquina Enigma usando la configuración actual
     enigma = EnigmaMachine(selected_rotors, reflector_B, plugboard)
 
-    # Entrada de texto
+    # Entrada de texto para cifrado/descifrado
     st.header("Cifrado/Descifrado de Mensajes")
     mensaje = st.text_input("Introduce el mensaje:")
 
