@@ -1,11 +1,33 @@
 import sys
 import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import streamlit as st
 import pyperclip
+import json
 from enigma.rotor import Rotor
 from enigma.reflector import Reflector
 from enigma.plugboard import Plugboard
 from enigma.enigma_machine import EnigmaMachine
+
+def aplicar_configuracion(configuracion_importada):
+    try:
+        config = json.loads(configuracion_importada)
+        rotors_line = config["Rotores"]
+        positions_line = config["Posiciones Iniciales"]
+        plugboard_line = config["Plugboard"]
+
+        # Aplicar la configuración a los selectboxes y sliders
+        for i, rotor_name in enumerate(rotors_line):
+            st.session_state[f'rotor_{i+1}'] = rotor_name
+            st.session_state[f'position_{i}'] = positions_line[i]
+
+        for letter, swap_with in plugboard_line.items():
+            st.session_state[f'plugboard_{letter}'] = swap_with
+
+        st.success("Configuración aplicada con éxito")
+    except Exception as e:
+        st.error(f"Error al aplicar la configuración: {e}")
 
 def main():
     st.title("Simulador de Máquina Enigma")
@@ -20,6 +42,14 @@ def main():
         st.write("Sitio web:", "www.allostericsolutions.com")
 
     st.write("### Enigma Machine")
+
+    # Importar configuración
+    st.header("Importar Configuración")
+    configuracion_importada = st.text_area("Pega la configuración aquí", height=200)
+    if st.button("Aplicar Configuración"):
+        # Lógica para aplicar la configuración importada
+        aplicar_configuracion(configuracion_importada)
+        st.experimental_rerun()
 
     # Definición de los rotores disponibles
     rotors = {
@@ -77,46 +107,15 @@ def main():
 
     # Mostrar configuración seleccionada
     st.header("Configuración Seleccionada")
-    configuracion_seleccionada = f"Rotores: {selected_rotor_names}\n"
-    configuracion_seleccionada += f"Posiciones Iniciales: {rotor_positions}\n"
-    configuracion_seleccionada += f"Plugboard: {plugboard_dict}"
+    configuracion_seleccionada = json.dumps({
+        "Rotores": selected_rotor_names,
+        "Posiciones Iniciales": rotor_positions,
+        "Plugboard": plugboard_dict
+    }, indent=4)
     st.text_area("Configuración", value=configuracion_seleccionada, height=200)
 
-    # Botón de copiado automático
-    if st.button("Copiar Configuración"):
-        pyperclip.copy(configuracion_seleccionada)
-        st.success("Configuración copiada al portapapeles")
-
-    # Importar configuración
-    st.header("Importar Configuración")
-    configuracion_importada = st.text_area("Pega la configuración aquí", height=200)
-    if st.button("Aplicar Configuración"):
-        # Lógica para aplicar la configuración importada
-        aplicar_configuracion(configuracion_importada)
-
-def aplicar_configuracion(configuracion_importada):
-    # Parsear y aplicar la configuración importada
-    # Ejemplo de formato de configuración importada:
-    # Rotores: ['Rotor I', 'Rotor II', 'Rotor III']
-    # Posiciones Iniciales: [0, 0, 0]
-    # Plugboard: {'A': 'B', 'B': 'A', 'C': 'D', 'D': 'C'}
-    try:
-        lines = configuracion_importada.split('\n')
-        rotors_line = lines[0].split(': ')[1].strip("[]").replace("'", "").split(', ')
-        positions_line = [int(x) for x in lines[1].split(': ')[1].strip("[]").split(', ')]
-        plugboard_line = eval(lines[2].split(': ')[1])
-
-        # Aplicar la configuración a los selectboxes y sliders
-        for i, rotor_name in enumerate(rotors_line):
-            st.session_state[f'rotor_{i+1}'] = rotor_name
-            st.session_state[f'position_{i}'] = positions_line[i]
-
-        for letter, swap_with in plugboard_line.items():
-            st.session_state[f'plugboard_{letter}'] = swap_with
-
-        st.success("Configuración aplicada con éxito")
-    except Exception as e:
-        st.error(f"Error al aplicar la configuración: {e}")
+    # Botón de copiado automático usando st.code
+    st.code(configuracion_seleccionada, language='json')
 
 if __name__ == "__main__":
     main()
