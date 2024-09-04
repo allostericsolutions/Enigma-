@@ -22,14 +22,6 @@ def main():
 
     st.write("### Enigma Machine")
 
-    # Importar configuración
-    st.header("Importar Configuración")
-    configuracion_importada = st.text_area("Pega la configuración aquí", height=200)
-    if st.button("Aplicar Configuración"):
-        # Lógica para aplicar la configuración importada
-        aplicar_configuracion(configuracion_importada)
-        st.experimental_rerun()
-
     # Definición de los rotores disponibles
     rotors = {
         "Rotor I": Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", 16),
@@ -97,6 +89,13 @@ def main():
     if st.button("Copiar Configuración"):
         pyperclip.copy(configuracion_seleccionada)
         st.success("Configuración copiada al portapapeles")
+
+    # Importar configuración
+    st.header("Importar Configuración")
+    configuracion_importada = st.text_area("Pega la configuración aquí", height=200)
+    if st.button("Aplicar Configuración"):
+        # Lógica para aplicar la configuración importada
+        aplicar_configuracion(configuracion_importada)
 
 def aplicar_configuracion(configuracion_importada):
     try:
