@@ -9,13 +9,14 @@ from enigma.enigma_machine import EnigmaMachine
 def main():
     st.title("Simulador de Máquina Enigma")
 
-    # Mostrar logo, contacto y sitio web antes de las pestañas
-    st.image(
-        "https://storage.googleapis.com/allostericsolutionsr/Allosteric_Solutions.png",
-        width=400,
-    )
-    st.write("Contacto:", "franciscocuriel@allostericsolutions.com")
-    st.write("Sitio web:", "www.allostericsolutions.com")
+    # Mostrar logo, contacto y sitio web en la barra lateral
+    with st.sidebar:
+        st.image(
+            "https://storage.googleapis.com/allostericsolutionsr/Allosteric_Solutions.png",
+            width=360,
+        )
+        st.write("Contacto:", "franciscocuriel@allostericsolutions.com")
+        st.write("Sitio web:", "www.allostericsolutions.com")
 
     st.write("### Enigma Machine")
 
