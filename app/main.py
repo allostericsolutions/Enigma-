@@ -1,5 +1,3 @@
-import sys
-import os
 import streamlit as st
 from enigma.rotor import Rotor
 from enigma.reflector import Reflector
@@ -9,11 +7,11 @@ from enigma.enigma_machine import EnigmaMachine
 def main():
     st.title("Simulador de Máquina Enigma")
 
-    # Ruta absoluta para el archivo de imagen
-    image_path = os.path.join(os.path.dirname(__file__), 'Allosteric_Solutions.png')
+    # URL de la imagen
+    image_url = "https://www.allostericsolutions.com/path/to/Allosteric_Solutions.png"
 
     with st.sidebar:
-        st.image(image_path, caption='Allosteric Solutions', width=360)
+        st.image(image_url, caption='Allosteric Solutions', width=360)
         st.markdown("[Visit our website](https://www.allostericsolutions.com)")
         st.markdown("Contact: [franciscocuriel@allostericsolutions.com](mailto:franciscocuriel@allostericsolutions.com)")
 
