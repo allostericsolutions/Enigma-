@@ -28,7 +28,7 @@ def aplicar_configuracion(configuracion_importada):
         st.error(f"Error al aplicar la configuración: {e}")
 
 def main():
-    st.title("Simulador de Máquina Enigma")
+    st.title("Enigma Machine")
 
     # Mostrar logo, contacto y sitio web en la barra lateral
     with st.sidebar:
@@ -39,8 +39,7 @@ def main():
         st.write("Contacto:", "franciscocuriel@allostericsolutions.com")
         st.write("Sitio web:", "www.allostericsolutions.com")
 
-    st.write("### Enigma Machine")
-
+   
     # Importar configuración
     st.header("Importar Configuración")
     configuracion_importada = st.text_area("Pega la configuración aquí", height=200)
