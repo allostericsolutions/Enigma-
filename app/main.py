@@ -8,7 +8,7 @@ from enigma.plugboard import Plugboard
 from enigma.enigma_machine import EnigmaMachine
 
 def main():
-    st.title("Simulador de Máquina Enigma")
+    st.title("Enigma Machine")
 
     # Mostrar logo, contacto y sitio web en la barra lateral
     with st.sidebar:
