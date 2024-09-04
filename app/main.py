@@ -8,41 +8,41 @@ from enigma.reflector import Reflector
 from enigma.plugboard import Plugboard
 from enigma.enigma_machine import EnigmaMachine
 
-def aplicar_configuracion(configuracion_importada):
+def apply_configuration(imported_config):
     try:
-        config = json.loads(configuracion_importada)
-        rotors_line = config["Rotores"]
-        positions_line = config["Posiciones Iniciales"]
+        config = json.loads(imported_config)
+        rotors_line = config["Rotors"]
+        positions_line = config["Initial Positions"]
         plugboard_line = config["Plugboard"]
 
-        # Guardar la configuración en el estado de la sesión
+        # Store the configuration in session state
         st.session_state['rotors_line'] = rotors_line
         st.session_state['positions_line'] = positions_line
         st.session_state['plugboard_line'] = plugboard_line
 
-        st.success("Configuración aplicada con éxito")
+        st.success("Configuration applied successfully")
     except Exception as e:
-        st.error(f"Error al aplicar la configuración: {e}")
+        st.error(f"Error applying configuration: {e}")
 
 def main():
     st.title("Enigma Machine")
 
-    # Mostrar logo, contacto y sitio web en la barra lateral
+    # Show logo, contact and website in the sidebar
     with st.sidebar:
         st.image(
             "https://storage.googleapis.com/allostericsolutionsr/Allosteric_Solutions.png",
             width=360,
         )
-        st.write("Contacto:", "franciscocuriel@allostericsolutions.com")
-        st.write("Sitio web:", "www.allostericsolutions.com")
+        st.write("Contact:", "franciscocuriel@allostericsolutions.com")
+        st.write("Website:", "www.allostericsolutions.com")
 
-    # Importar configuración
-    st.header("Importar Configuración")
-    configuracion_importada = st.text_area("Pega la configuración aquí", height=200)
-    if st.button("Aplicar Configuración"):
-        aplicar_configuracion(configuracion_importada)
+    # Import configuration
+    st.header("Import Configuration")
+    imported_config = st.text_area("Paste the configuration here", height=200)
+    if st.button("Apply Configuration"):
+        apply_configuration(imported_config)
 
-    # Rotores disponibles
+    # Available rotors
     rotors = {
         "Rotor I": Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", 16),
         "Rotor II": Rotor("AJDKSIRUXBLHWTMCQGZNPYFVOE", 4),
@@ -51,10 +51,10 @@ def main():
         "Rotor V": Rotor("VZBRGITYUPSDNHLXAWMJQOFECK", 25)
     }
 
-    # Reflector disponible
+    # Available reflector
     reflector_B = Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT")
 
-    # Configuración inicial basada en el estado de la sesión
+    # Initial configuration based on session state
     if 'rotors_line' in st.session_state:
         rotors_line = st.session_state['rotors_line']
     else:
@@ -70,29 +70,29 @@ def main():
     else:
         plugboard_line = {}
 
-    # Selección de rotores
-    st.header("Selección de Rotores")
+    # Rotor selection
+    st.header("Rotor Selection")
     selected_rotors = []
     selected_rotor_names = []
     available_rotors = list(rotors.keys())
 
     for i, rotor_name in enumerate(rotors_line):
-        rotor_name = st.selectbox(f"Selecciona el rotor {i+1}", available_rotors, index=available_rotors.index(rotor_name), key=f"rotor_{i+1}")
+        rotor_name = st.selectbox(f"Select rotor {i+1}", available_rotors, index=available_rotors.index(rotor_name), key=f"rotor_{i+1}")
         selected_rotors.append(rotors[rotor_name])
         selected_rotor_names.append(rotor_name)
         available_rotors.remove(rotor_name)
 
-    # Configuración de la posición inicial de los rotores
-    st.header("Posición Inicial de los Rotores")
+    # Initial rotor positions
+    st.header("Initial Rotor Positions")
     rotor_positions = []
     for i, position in enumerate(positions_line):
-        position = st.slider(f"Posición inicial del {i+1}° rotor", 0, 25, position, key=f"position_{i}")
+        position = st.slider(f"Initial position of rotor {i+1}", 0, 25, position, key=f"position_{i}")
         selected_rotors[i].set_position(position)
         rotor_positions.append(position)
 
-    # Configuración del plugboard
-    st.header("Configuración del Plugboard")
-    plugboard_connections = st.text_input("Introduce las conexiones del plugboard (ej. 'AB CD EF')", " ".join([f"{k}{v}" for k, v in plugboard_line.items()]))
+    # Plugboard configuration
+    st.header("Plugboard Configuration")
+    plugboard_connections = st.text_input("Enter the plugboard connections (e.g. 'AB CD EF')", " ".join([f"{k}{v}" for k, v in plugboard_line.items()]))
     plugboard_dict = {}
     if plugboard_connections:
         pairs = plugboard_connections.split()
@@ -103,29 +103,29 @@ def main():
     
     plugboard = Plugboard(plugboard_dict)
 
-    # Crear la máquina Enigma usando la configuración actual
+    # Create the Enigma machine with the current configuration
     enigma = EnigmaMachine(selected_rotors, reflector_B, plugboard)
 
-    # Entrada de texto para cifrado/descifrado
-    st.header("Cifrado/Descifrado de Mensajes")
-    mensaje = st.text_input("Introduce el mensaje:")
+    # Text input for encryption/decryption
+    st.header("Message Encryption/Decryption")
+    message = st.text_input("Enter the message:")
 
-    # Botón para cifrar/descifrar
-    if st.button("Cifrar/Descifrar"):
-        mensaje_cifrado = enigma.encrypt_decrypt(mensaje)
-        st.write(f"Mensaje cifrado/descifrado: {mensaje_cifrado}")
+    # Button for encryption/decryption
+    if st.button("Encrypt/Decrypt"):
+        encrypted_message = enigma.encrypt_decrypt(message)
+        st.write(f"Encrypted/Decrypted message: {encrypted_message}")
 
-    # Mostrar configuración seleccionada
-    st.header("Configuración Seleccionada")
-    configuracion_seleccionada = json.dumps({
-        "Rotores": selected_rotor_names,
-        "Posiciones Iniciales": rotor_positions,
+    # Show selected configuration
+    st.header("Selected Configuration")
+    selected_config = json.dumps({
+        "Rotors": selected_rotor_names,
+        "Initial Positions": rotor_positions,
         "Plugboard": plugboard_dict
     }, indent=4)
-    st.text_area("Configuración", value=configuracion_seleccionada, height=200)
+    st.text_area("Configuration", value=selected_config, height=200)
 
-    # Botón de copiado automático usando st.code
-    st.code(configuracion_seleccionada, language='json')
+    # Auto copy button using st.code
+    st.code(selected_config, language='json')
 
 if __name__ == "__main__":
     main()
