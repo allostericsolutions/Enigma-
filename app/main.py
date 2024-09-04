@@ -93,8 +93,10 @@ def main():
     }, indent=4)
     st.text_area("Configuración", value=configuracion_seleccionada, height=200)
 
-    # Botón de copiado automático usando st.code
-    st.code(configuracion_seleccionada, language='json')
+    # Botón de copiado automático
+    if st.button("Copiar Configuración"):
+        pyperclip.copy(configuracion_seleccionada)
+        st.success("Configuración copiada al portapapeles")
 
 def aplicar_configuracion(configuracion_importada):
     try:
