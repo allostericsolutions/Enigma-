@@ -63,7 +63,7 @@ def main():
     if 'positions_line' in st.session_state:
         positions_line = st.session_state['positions_line']
     else:
-        positions_line = [0, 0, 0]
+        positions_line = ["A", "A", "A"]
     
     if 'plugboard_line' in st.session_state:
         plugboard_line = st.session_state['plugboard_line']
@@ -85,9 +85,10 @@ def main():
     # Initial rotor positions
     st.header("Initial Rotor Positions")
     rotor_positions = []
+    alphabet = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
     for i, position in enumerate(positions_line):
-        position = st.slider(f"Initial position of rotor {i+1}", 0, 25, position, key=f"position_{i}")
-        selected_rotors[i].set_position(position)
+        position = st.selectbox(f"Initial position of rotor {i+1}", alphabet, index=alphabet.index(position), key=f"position_{i}")
+        selected_rotors[i].set_position(alphabet.index(position))
         rotor_positions.append(position)
 
     # Plugboard configuration
