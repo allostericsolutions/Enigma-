@@ -1,38 +1,17 @@
-import sys
-import os
 import streamlit as st
-import pyperclip
 import json
 from enigma.rotor import Rotor
 from enigma.reflector import Reflector
 from enigma.plugboard import Plugboard
 from enigma.enigma_machine import EnigmaMachine
-
-def apply_configuration(imported_config):
-    try:
-        config = json.loads(imported_config)
-        rotors_line = config["Rotors"]
-        positions_line = config["Initial Positions"]
-        plugboard_line = config["Plugboard"]
-
-        # Store the configuration in session state
-        st.session_state['rotors_line'] = rotors_line
-        st.session_state['positions_line'] = positions_line
-        st.session_state['plugboard_line'] = plugboard_line
-
-        st.success("Configuration applied successfully")
-    except Exception as e:
-        st.error(f"Error applying configuration: {e}")
+from app.config import apply_configuration
 
 def main():
     st.title("Enigma Machine")
 
     # Show logo, contact and website in the sidebar
     with st.sidebar:
-        st.image(
-            "https://storage.googleapis.com/allostericsolutionsr/Allosteric_Solutions.png",
-            width=360,
-        )
+        st.image("assets/logo.png", width=360)
         st.write("Contact:", "franciscocuriel@allostericsolutions.com")
         st.write("Website:", "www.allostericsolutions.com")
 
@@ -51,8 +30,14 @@ def main():
         "Rotor V": Rotor("VZBRGITYUPSDNHLXAWMJQOFECK", 25)
     }
 
-    # Available reflector
-    reflector_B = Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT")
+    # Available reflectors
+    reflectors = {
+        "Reflector A": Reflector("EJMZALYXVBWFCRQUONTSPIKHGD"),
+        "Reflector B": Reflector("YRUHQSLDPXNGOKMIEBFZCWVJAT"),
+        "Reflector C": Reflector("FVPJIAOYEDRZXWGCTKUQSBNMHL"),
+        "Reflector B Dünn": Reflector("ENKQAUYWJICOPBLMDXZVFTHRGS"),
+        "Reflector C Dünn": Reflector("RDOBJNTKVEHMLFCWZAXGYIPSUQ")
+    }
 
     # Initial configuration based on session state
     if 'rotors_line' in st.session_state:
@@ -95,6 +80,11 @@ def main():
         selected_rotors[i].set_position(alphabet.index(position))
         rotor_positions.append(position)
 
+    # Reflector selection
+    st.header("Reflector Selection")
+    reflector_name = st.selectbox("Select reflector", list(reflectors.keys()), index=1)  # Default to Reflector B
+    selected_reflector = reflectors[reflector_name]
+
     # Plugboard configuration
     st.header("Plugboard Configuration")
     plugboard_connections = st.text_input("Enter the plugboard connections (e.g. 'AB CD EF')", " ".join([f"{k}{v}" for k, v in plugboard_line.items()]))
@@ -109,7 +99,7 @@ def main():
     plugboard = Plugboard(plugboard_dict)
 
     # Create the Enigma machine with the current configuration
-    enigma = EnigmaMachine(selected_rotors, reflector_B, plugboard)
+    enigma = EnigmaMachine(selected_rotors, selected_reflector, plugboard)
 
     # Text input for encryption/decryption
     st.header("Message Encryption/Decryption")
@@ -125,6 +115,7 @@ def main():
     selected_config = json.dumps({
         "Rotors": selected_rotor_names,
         "Initial Positions": rotor_positions,
+        "Reflector": reflector_name,
         "Plugboard": plugboard_dict
     }, indent=4)
     st.text_area("Configuration", value=selected_config, height=200)
