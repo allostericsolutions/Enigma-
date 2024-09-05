@@ -77,6 +77,8 @@ def main():
     available_rotors = list(rotors.keys())
 
     for i, rotor_name in enumerate(rotors_line):
+        if rotor_name not in available_rotors:
+            rotor_name = available_rotors[0]  # Default to the first available rotor if not found
         rotor_name = st.selectbox(f"Select rotor {i+1}", available_rotors, index=available_rotors.index(rotor_name), key=f"rotor_{i+1}")
         selected_rotors.append(rotors[rotor_name])
         selected_rotor_names.append(rotor_name)
@@ -87,6 +89,8 @@ def main():
     rotor_positions = []
     alphabet = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
     for i, position in enumerate(positions_line):
+        if position not in alphabet:
+            position = "A"  # Default to 'A' if the position is not valid
         position = st.selectbox(f"Initial position of rotor {i+1}", alphabet, index=alphabet.index(position), key=f"position_{i}")
         selected_rotors[i].set_position(alphabet.index(position))
         rotor_positions.append(position)
