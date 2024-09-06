@@ -129,4 +129,4 @@ def main():
     st.code(selected_config, language='json')
 
 if __name__ == "__main__":
-    main(
+    main()
