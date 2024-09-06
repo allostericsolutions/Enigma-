@@ -3,16 +3,6 @@ import os
 import streamlit as st
 import pyperclip
 import json
-
-# Obten el directorio del archivo actual y el directorio padre
-current_path = os.path.dirname(os.path.abspath(__file__))
-parent_path = os.path.dirname(current_path)
-
-# Agregar el directorio padre a sys.path
-if parent_path not in sys.path:
-    sys.path.append(parent_path)
-
-# Importar los módulos necesarios
 from enigma.rotor import Rotor
 from enigma.reflector import Reflector
 from enigma.plugboard import Plugboard
