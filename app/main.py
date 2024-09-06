@@ -3,10 +3,26 @@ import os
 import streamlit as st
 import pyperclip
 import json
-from enigma.rotor import Rotor
-from enigma.reflector import Reflector
-from enigma.plugboard import Plugboard
-from enigma.enigma_machine import EnigmaMachine
+
+# Obten el directorio del archivo actual y el directorio padre
+current_path = os.path.dirname(os.path.abspath(__file__))
+parent_path = os.path.dirname(current_path)
+
+# Agregar el directorio padre a sys.path
+if parent_path not in sys.path:
+    sys.path.append(parent_path)
+st.write("sys.path for debugging:", sys.path)  # Debugging
+
+# Intentar importar los módulos
+try:
+    from enigma.rotor import Rotor
+    from enigma.reflector import Reflector
+    from enigma.plugboard import Plugboard
+    from enigma.enigma_machine import EnigmaMachine
+    st.write("Importaciones exitosas")  # Confirmación de éxito de importación
+except ModuleNotFoundError as e:
+    st.error(f'Error al importar módulos: {e}')
+    raise
 
 def apply_configuration(imported_config):
     try:
