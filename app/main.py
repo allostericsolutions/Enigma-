@@ -1,3 +1,4 @@
+
 import sys
 import os
 import streamlit as st
@@ -63,7 +64,7 @@ def main():
     if 'positions_line' in st.session_state:
         positions_line = st.session_state['positions_line']
     else:
-        positions_line = [0, 0, 0]
+        positions_line = ["A", "A", "A"]
     
     if 'plugboard_line' in st.session_state:
         plugboard_line = st.session_state['plugboard_line']
@@ -77,6 +78,8 @@ def main():
     available_rotors = list(rotors.keys())
 
     for i, rotor_name in enumerate(rotors_line):
+        if rotor_name not in available_rotors:
+            rotor_name = available_rotors[0]  # Default to the first available rotor if not found
         rotor_name = st.selectbox(f"Select rotor {i+1}", available_rotors, index=available_rotors.index(rotor_name), key=f"rotor_{i+1}")
         selected_rotors.append(rotors[rotor_name])
         selected_rotor_names.append(rotor_name)
@@ -85,9 +88,12 @@ def main():
     # Initial rotor positions
     st.header("Initial Rotor Positions")
     rotor_positions = []
+    alphabet = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
     for i, position in enumerate(positions_line):
-        position = st.slider(f"Initial position of rotor {i+1}", 0, 25, position, key=f"position_{i}")
-        selected_rotors[i].set_position(position)
+        if position not in alphabet:
+            position = "A"  # Default to 'A' if the position is not valid
+        position = st.selectbox(f"Initial position of rotor {i+1}", alphabet, index=alphabet.index(position), key=f"position_{i}")
+        selected_rotors[i].set_position(alphabet.index(position))
         rotor_positions.append(position)
 
     # Plugboard configuration
