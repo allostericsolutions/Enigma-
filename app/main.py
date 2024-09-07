@@ -1,4 +1,3 @@
-
 import sys
 import os
 import streamlit as st
@@ -119,7 +118,8 @@ def main():
     # Button for encryption/decryption
     if st.button("Encrypt/Decrypt"):
         encrypted_message = enigma.encrypt_decrypt(message)
-        st.write(f"Encrypted/Decrypted message: {encrypted_message}")
+        st.write("Encrypted/Decrypted message:")
+        st.code(encrypted_message, language='')
 
     # Show selected configuration
     st.header("Selected Configuration")
