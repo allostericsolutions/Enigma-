@@ -1,5 +1,9 @@
 import sys
 import os
+
+# Añade el directorio 'enigma_project' al PYTHONPATH
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import streamlit as st
 import pyperclip
 import json
